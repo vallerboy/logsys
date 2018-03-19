@@ -3,11 +3,10 @@ package pl.oskarpolak.logsys.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.omg.CORBA.PRIVATE_MEMBER;
 
 import javax.persistence.*;
 
-@Table(name = "keys")
+@Table(name = "apikey")
 @Entity
 @Data
 @NoArgsConstructor

@@ -6,14 +6,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import pl.oskarpolak.logsys.models.KeyEntity;
 import pl.oskarpolak.logsys.models.UserEntity;
 import pl.oskarpolak.logsys.models.Utils;
 import pl.oskarpolak.logsys.models.dto.UserDto;
+import pl.oskarpolak.logsys.models.repositories.KeyRepository;
 import pl.oskarpolak.logsys.models.repositories.UserRepository;
 import pl.oskarpolak.logsys.models.services.UserService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,12 +23,16 @@ public class UserController {
 
     final UserRepository userRepository;
     final UserService userService;
+    final KeyRepository keyRepository;
 
     @Autowired
-    public UserController(UserRepository userRepository, UserService userService) {
+    public UserController(UserRepository userRepository, UserService userService, KeyRepository keyRepository) {
         this.userRepository = userRepository;
         this.userService = userService;
+        this.keyRepository = keyRepository;
     }
+
+
 
 
     @GetMapping("/")
@@ -37,7 +42,14 @@ public class UserController {
     }
 
     @PostMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity register(@RequestBody @Valid UserDto userDto, BindingResult bindingResult){
+    public ResponseEntity register(@RequestBody @Valid UserDto userDto,
+                                   BindingResult bindingResult,
+                                   @RequestHeader("ApiKey") String key){
+       Optional<KeyEntity> keyEntity = keyRepository.findByKey(key);
+       if(!keyEntity.isPresent()){
+           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Key not exist");
+       }
+
         if(bindingResult.hasErrors()){
             return raportErrors(bindingResult);
         }
@@ -47,7 +59,7 @@ public class UserController {
                                     .body("Busy username");
         }
 
-        userService.registerUser(userDto);
+        userService.registerUser(userDto, keyEntity.get());
         return ResponseEntity.ok("Registered");
     }
 
