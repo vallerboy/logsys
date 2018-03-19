@@ -8,7 +8,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import pl.oskarpolak.logsys.models.UserEntity;
 import pl.oskarpolak.logsys.models.dto.UserDto;
 import pl.oskarpolak.logsys.models.repositories.UserRepository;
 import pl.oskarpolak.logsys.models.services.UserService;
@@ -31,21 +30,25 @@ public class UserController {
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity register(@RequestBody @Valid UserDto userDto, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(  bindingResult
-                            .getFieldErrors()
-                            .stream()
-                            .map(s -> s.getField() + " : " + s.getDefaultMessage())
-                            .collect(Collectors.joining("\n")));
+            return raportErrors(bindingResult);
         }
 
-        if(userRepository.existsByLogin(userDto.getLogin())){
+        if(userRepository.existsByUsername(userDto.getLogin())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                    .body("Busy login");
+                                    .body("Busy username");
         }
 
         userService.registerUser(userDto);
         return ResponseEntity.ok("Registered");
+    }
+
+    private ResponseEntity raportErrors(BindingResult bindingResult) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(  bindingResult
+                        .getFieldErrors()
+                        .stream()
+                        .map(s -> s.getField() + " : " + s.getDefaultMessage())
+                        .collect(Collectors.joining("\n")));
     }
 
 }

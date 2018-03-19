@@ -1,6 +1,7 @@
 package pl.oskarpolak.logsys.models;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import pl.oskarpolak.logsys.models.dto.UserDto;
 
@@ -15,7 +16,8 @@ public class UserEntity {
     @Id
     @GeneratedValue
     private int id;
-    private String login;
+    @Column(name = "login")
+    private String username;
     private String password;
     private String firstname;
     private String surname;

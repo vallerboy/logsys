@@ -19,10 +19,11 @@ public class UserService {
 
     public void registerUser(UserDto userDto) {
         UserEntity userEntity = new UserEntity();
-        userEntity.setLogin(userDto.getLogin());
+        userEntity.setUsername(userDto.getLogin());
         userEntity.setPassword(userDto.getPassword());
         userEntity.setFirstname(userDto.getFirstname());
         userEntity.setSurname(userDto.getSurname());
+
 
         userRepository.save(userEntity);
     }
