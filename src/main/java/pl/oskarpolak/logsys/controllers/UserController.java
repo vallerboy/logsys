@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.oskarpolak.logsys.models.UserEntity;
+import pl.oskarpolak.logsys.models.Utils;
 import pl.oskarpolak.logsys.models.dto.UserDto;
 import pl.oskarpolak.logsys.models.repositories.UserRepository;
 import pl.oskarpolak.logsys.models.services.UserService;
@@ -26,6 +27,13 @@ public class UserController {
     public UserController(UserRepository userRepository, UserService userService) {
         this.userRepository = userRepository;
         this.userService = userService;
+    }
+
+
+    @GetMapping("/")
+    @ResponseBody
+    public String index() {
+        return Utils.generateRandomString(512);
     }
 
     @PostMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -50,6 +58,12 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not exist");
         }
         return ResponseEntity.ok(userEntity.get());
+    }
+
+    @DeleteMapping(value = "/user/{login}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity delete(@PathVariable("login") String login){
+        userRepository.findByUsername(login).ifPresent(s -> userRepository.delete(s.getId()));
+        return ResponseEntity.ok("Try to delete");
     }
 
 
