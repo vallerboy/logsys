@@ -44,7 +44,7 @@ public class UserController {
     @PostMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity register(@RequestBody @Valid UserDto userDto,
                                    BindingResult bindingResult,
-                                   @RequestHeader("ApiKey") String key){
+                                   @RequestHeader(value = "ApiKey",required = false) String key){
        Optional<KeyEntity> keyEntity = keyRepository.findByKey(key);
        if(!keyEntity.isPresent()){
            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Key not exist");
@@ -64,7 +64,13 @@ public class UserController {
     }
 
     @GetMapping(value = "/user/{login}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity get(@PathVariable("login") String login){
+    public ResponseEntity get(@PathVariable("login") String login,
+                              @RequestHeader(value = "ApiKey",required = false) String key){
+        Optional<KeyEntity> keyEntity = keyRepository.findByKey(key);
+        if(!keyEntity.isPresent()){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Key not exist");
+        }
+
         Optional<UserEntity> userEntity = userRepository.findByUsername(login);
         if(!userEntity.isPresent()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not exist");
@@ -73,7 +79,13 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/user/{login}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity delete(@PathVariable("login") String login){
+    public ResponseEntity delete(@PathVariable("login") String login,
+                                 @RequestHeader(value = "ApiKey",required = false) String key){
+        Optional<KeyEntity> keyEntity = keyRepository.findByKey(key);
+        if(!keyEntity.isPresent()){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Key not exist");
+        }
+
         userRepository.findByUsername(login).ifPresent(s -> userRepository.delete(s.getId()));
         return ResponseEntity.ok("Try to delete");
     }
