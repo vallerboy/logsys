@@ -5,14 +5,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.oskarpolak.logsys.models.UserEntity;
 import pl.oskarpolak.logsys.models.dto.UserDto;
 import pl.oskarpolak.logsys.models.repositories.UserRepository;
 import pl.oskarpolak.logsys.models.services.UserService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,7 +28,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity register(@RequestBody @Valid UserDto userDto, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             return raportErrors(bindingResult);
@@ -41,6 +42,17 @@ public class UserController {
         userService.registerUser(userDto);
         return ResponseEntity.ok("Registered");
     }
+
+    @GetMapping(value = "/user/{login}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity get(@PathVariable("login") String login){
+        Optional<UserEntity> userEntity = userRepository.findByUsername(login);
+        if(!userEntity.isPresent()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not exist");
+        }
+        return ResponseEntity.ok(userEntity.get());
+    }
+
+
 
     private ResponseEntity raportErrors(BindingResult bindingResult) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
