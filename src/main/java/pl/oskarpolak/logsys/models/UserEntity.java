@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "userapi")
@@ -20,4 +21,7 @@ public class UserEntity {
 
     @Column(name = "is_login")
     private boolean isLogin;
+
+    @Column(name = "creation_date")
+    private LocalDateTime creationDate;
 }
