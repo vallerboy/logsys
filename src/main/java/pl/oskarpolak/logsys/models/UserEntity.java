@@ -28,4 +28,9 @@ public class UserEntity {
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
+    @OneToOne
+    @JoinColumn(name = "key_id")
+    private KeyEntity key;
+
+
 }
