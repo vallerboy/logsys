@@ -6,4 +6,5 @@ import pl.oskarpolak.logsys.models.UserEntity;
 
 @Repository
 public interface UserRepository extends CrudRepository<UserEntity, Integer> {
+    boolean existsByLogin(String login);
 }

@@ -2,6 +2,7 @@ package pl.oskarpolak.logsys.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.oskarpolak.logsys.models.dto.UserDto;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -24,4 +25,5 @@ public class UserEntity {
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
+
 }
